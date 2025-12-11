@@ -1,11 +1,11 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { Exercise } from '../models/exercise';
 
 @Injectable({ providedIn: 'root' })
 export class ExerciseService {
-  private nextId = 7;
-  private readonly exercisesSignal = signal<Exercise[]>([
+  private static readonly STORAGE_KEY = 'gym-app-exercises';
+  private readonly defaultExercises: Exercise[] = [
     {
       id: 1,
       name: 'Panca piana con bilanciere',
@@ -57,10 +57,21 @@ export class ExerciseService {
       reps: 30,
       notes: '30 secondi a serie'
     }
-  ]);
+  ];
+
+  private nextId = this.defaultExercises.length + 1;
+  private readonly exercisesSignal = signal<Exercise[]>(this.loadFromStorage() ?? this.defaultExercises);
 
   readonly exercises = this.exercisesSignal.asReadonly();
   readonly exercises$ = toObservable(this.exercisesSignal);
+
+  constructor() {
+    effect(() => {
+      this.persist(this.exercisesSignal());
+    });
+
+    this.syncNextId();
+  }
 
   addExercise(exercise: Exercise): void {
     const payload: Exercise = {
@@ -84,5 +95,34 @@ export class ExerciseService {
     const currentMax = this.exercisesSignal().reduce((max, item) => Math.max(max, item.id), 0);
     this.nextId = Math.max(this.nextId, currentMax + 1);
     return this.nextId++;
+  }
+
+  private persist(exercises: Exercise[]): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+    window.localStorage.setItem(ExerciseService.STORAGE_KEY, JSON.stringify(exercises));
+  }
+
+  private loadFromStorage(): Exercise[] | null {
+    if (typeof window === 'undefined') {
+      return null;
+    }
+    const raw = window.localStorage.getItem(ExerciseService.STORAGE_KEY);
+    if (!raw) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(raw) as Exercise[];
+      return Array.isArray(parsed) ? parsed : null;
+    } catch {
+      return null;
+    }
+  }
+
+  private syncNextId(): void {
+    const currentMax = this.exercisesSignal().reduce((max, item) => Math.max(max, item.id), 0);
+    this.nextId = Math.max(this.nextId, currentMax + 1);
   }
 }
