@@ -1,6 +1,6 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import { Exercise } from './models/exercise';
+import { Exercise, MuscleGroup } from './models/exercise';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -12,12 +12,13 @@ import { FormsModule } from '@angular/forms';
 export class App {
   protected readonly title = signal('gym-app');
   editMode: boolean = false;
-  exerciseToEdit: Exercise = new Exercise();
+  exerciseToEdit: Exercise = this.createEmptyExercise();
+  readonly muscleGroups: MuscleGroup[] = ['Petto', 'Schiena', 'Gambe', 'Braccia', 'Spalle', 'Core'];
   exercises: Exercise[] = [
     {
       id: 1,
       name: 'Panca piana con bilanciere',
-      muscleGroup: 'petto',
+      muscleGroup: 'Petto',
       sets: 3,
       reps: 8,
       weightKg: 50,
@@ -26,7 +27,7 @@ export class App {
     {
       id: 2,
       name: 'Lat machine avanti',
-      muscleGroup: 'schiena',
+      muscleGroup: 'Schiena',
       sets: 3,
       reps: 10,
       weightKg: 40,
@@ -35,7 +36,7 @@ export class App {
     {
       id: 3,
       name: 'Squat al multipower',
-      muscleGroup: 'gambe',
+      muscleGroup: 'Gambe',
       sets: 4,
       reps: 8,
       weightKg: 60,
@@ -44,7 +45,7 @@ export class App {
     {
       id: 4,
       name: 'Curl manubri in piedi',
-      muscleGroup: 'bicipiti',
+      muscleGroup: 'Braccia',
       sets: 3,
       reps: 12,
       weightKg: 10
@@ -52,7 +53,7 @@ export class App {
     {
       id: 5,
       name: 'French press bilanciere EZ',
-      muscleGroup: 'tricipiti',
+      muscleGroup: 'Braccia',
       sets: 3,
       reps: 10,
       weightKg: 25
@@ -60,7 +61,7 @@ export class App {
     {
       id: 6,
       name: 'Plank',
-      muscleGroup: 'core',
+      muscleGroup: 'Core',
       sets: 3,
       reps: 30,
       notes: '30 secondi a serie'
@@ -69,6 +70,7 @@ export class App {
 
   insertExercise() {
     this.editMode = true;
+    this.exerciseToEdit = this.createEmptyExercise();
   }
 
   editExercise(exercise: Exercise) {
@@ -100,12 +102,22 @@ export class App {
     // torno alla modalità visualizzazione (elenco)
     this.editMode = false;
     // resetto l'esercizio in modifica
-    this.exerciseToEdit = new Exercise();
+      this.exerciseToEdit = this.createEmptyExercise();
   }
 
   cancelEdit() {
     this.editMode = false;
-    this.exerciseToEdit = new Exercise();
+    this.exerciseToEdit = this.createEmptyExercise();
+  }
+
+  private createEmptyExercise(): Exercise {
+    return {
+      id: 0,
+      name: '',
+      muscleGroup: '',
+      sets: 0,
+      reps: 0
+    };
   }
 
 }

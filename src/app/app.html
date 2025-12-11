@@ -12,7 +12,12 @@
       </label>   
       <label>
         Gruppo Muscolare:
-        <input type="text" [(ngModel)]="exerciseToEdit.muscleGroup" placeholder="Scrivi il gruppo muscolare" />   
+        <select [(ngModel)]="exerciseToEdit.muscleGroup">
+          <option value="" disabled>Seleziona un gruppo muscolare</option>
+          @for (group of muscleGroups; track group) {
+          <option [value]="group">{{ group }}</option>
+          }
+        </select>   
       </label>
       <label>
         Serie:

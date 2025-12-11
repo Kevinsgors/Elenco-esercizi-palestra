@@ -1,9 +1,11 @@
-export class Exercise {
-  id: number = 0;
-  name: string = '';
-  muscleGroup: string = ''; // per ora semplice stringa: 'petto', 'schiena', ecc.
-  sets: number = 0;
-  reps: number = 0;
+export type MuscleGroup = 'Petto' | 'Schiena' | 'Gambe' | 'Braccia' | 'Spalle' | 'Core' | string;
+
+export interface Exercise {
+  id: number;
+  name: string;
+  muscleGroup: MuscleGroup;
+  sets: number;
+  reps: number;
   weightKg?: number;
   notes?: string;
 }
