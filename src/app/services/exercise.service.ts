@@ -1,4 +1,5 @@
 import { Injectable, signal } from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
 import { Exercise } from '../models/exercise';
 
 @Injectable({ providedIn: 'root' })
@@ -59,6 +60,7 @@ export class ExerciseService {
   ]);
 
   readonly exercises = this.exercisesSignal.asReadonly();
+  readonly exercises$ = toObservable(this.exercisesSignal);
 
   addExercise(exercise: Exercise): void {
     const payload: Exercise = {

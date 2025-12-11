@@ -1,41 +1,32 @@
 <div class="list-container">
-  <h3>Elenco Esercizi</h3>
+  <h3>Il tuo elenco esercizi</h3>
 
-  @if (exercises().length === 0) {
-    <p class="empty">Non hai ancora aggiunto esercizi.</p>
+  @if (exercises.length === 0) {
+    <p class="empty">Nessun esercizio inserito.</p>
   } @else {
-    <div class="cards">
-      @for (exercise of exercises(); track trackById($index, exercise)) {
-        <article class="exercise-card">
-          <header>
-            <h4>{{ exercise.name }}</h4>
-            <span class="muscle">{{ exercise.muscleGroup }}</span>
-          </header>
+    @for (exercise of exercises; track exercise.id) {
+      <article class="exercise-card">
+        <div class="card-header">
+          <span class="badge">{{ exercise.muscleGroup }}</span>
+          <h4>{{ exercise.name }}</h4>
+        </div>
 
-          <dl>
-            <div>
-              <dt>Serie</dt>
-              <dd>{{ exercise.sets }}</dd>
-            </div>
-            <div>
-              <dt>Ripetizioni</dt>
-              <dd>{{ exercise.reps }}</dd>
-            </div>
-            @if (exercise.weightKg !== undefined) {
-              <div>
-                <dt>Peso</dt>
-                <dd>{{ exercise.weightKg }} kg</dd>
-              </div>
+        <div class="card-body">
+          <p>
+            <strong>{{ exercise.sets }}</strong> x <strong>{{ exercise.reps }}</strong>
+            @if (exercise.weightKg) {
+              <span> @ {{ exercise.weightKg }}kg</span>
             }
-          </dl>
-
+          </p>
           @if (exercise.notes) {
-            <p class="notes">{{ exercise.notes }}</p>
+            <p class="notes">Note: {{ exercise.notes }}</p>
           }
+        </div>
 
-          <button type="button" (click)="deleteExercise(exercise.id)">Elimina</button>
-        </article>
-      }
-    </div>
+        <div class="card-actions">
+          <button class="btn-delete" type="button" (click)="delete(exercise.id)">Elimina</button>
+        </div>
+      </article>
+    }
   }
 </div>

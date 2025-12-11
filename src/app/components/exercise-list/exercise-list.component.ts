@@ -1,4 +1,5 @@
-import { Component, computed } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ExerciseService } from '../../services/exercise.service';
 import { Exercise } from '../../models/exercise';
 
@@ -8,16 +9,20 @@ import { Exercise } from '../../models/exercise';
   templateUrl: './exercise-list.component.html',
   styleUrl: './exercise-list.component.css'
 })
-export class ExerciseListComponent {
-  readonly exercises = computed(() => this.exerciseService.exercises());
+export class ExerciseListComponent implements OnInit {
+  exercises: Exercise[] = [];
 
   constructor(private readonly exerciseService: ExerciseService) {}
 
-  trackById(_: number, exercise: Exercise): number {
-    return exercise.id;
+  ngOnInit(): void {
+    this.exerciseService.exercises$
+      .pipe(takeUntilDestroyed())
+      .subscribe(data => {
+        this.exercises = data;
+      });
   }
 
-  deleteExercise(id: number): void {
+  delete(id: number): void {
     if (confirm('Sei sicuro di voler eliminare questo esercizio?')) {
       this.exerciseService.deleteExercise(id);
     }
