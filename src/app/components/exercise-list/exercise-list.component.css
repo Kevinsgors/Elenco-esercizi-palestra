@@ -1,0 +1,93 @@
+.list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cards {
+  display: grid;
+  gap: 1rem;
+}
+
+.exercise-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  background-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.exercise-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.75rem;
+}
+
+.exercise-card h4 {
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.exercise-card .muscle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+}
+
+dl {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0;
+}
+
+dl div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+dl dt {
+  font-weight: 600;
+  color: #374151;
+}
+
+dl dd {
+  margin: 0;
+  color: #111827;
+}
+
+.notes {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+button[type='button'] {
+  align-self: flex-start;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  background-color: #ef4444;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button[type='button']:hover {
+  background-color: #dc2626;
+}
+
+.empty {
+  margin: 0;
+  font-style: italic;
+  color: #6b7280;
+}

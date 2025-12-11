@@ -1,0 +1,41 @@
+<div class="list-container">
+  <h3>Elenco Esercizi</h3>
+
+  @if (exercises().length === 0) {
+    <p class="empty">Non hai ancora aggiunto esercizi.</p>
+  } @else {
+    <div class="cards">
+      @for (exercise of exercises(); track trackById($index, exercise)) {
+        <article class="exercise-card">
+          <header>
+            <h4>{{ exercise.name }}</h4>
+            <span class="muscle">{{ exercise.muscleGroup }}</span>
+          </header>
+
+          <dl>
+            <div>
+              <dt>Serie</dt>
+              <dd>{{ exercise.sets }}</dd>
+            </div>
+            <div>
+              <dt>Ripetizioni</dt>
+              <dd>{{ exercise.reps }}</dd>
+            </div>
+            @if (exercise.weightKg !== undefined) {
+              <div>
+                <dt>Peso</dt>
+                <dd>{{ exercise.weightKg }} kg</dd>
+              </div>
+            }
+          </dl>
+
+          @if (exercise.notes) {
+            <p class="notes">{{ exercise.notes }}</p>
+          }
+
+          <button type="button" (click)="deleteExercise(exercise.id)">Elimina</button>
+        </article>
+      }
+    </div>
+  }
+</div>
