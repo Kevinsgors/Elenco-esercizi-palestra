@@ -1,0 +1,9 @@
+/* You can add global styles to this file, and also import other style files */
+
+body {
+  background: linear-gradient(135deg, #ffffcc 0%, #ccffff 50%, #ffccff 100%);
+  background-attachment: fixed;
+  font-family: 'Comic Sans MS', 'Arial', cursive;
+  margin: 0;
+  padding: 0;
+}
