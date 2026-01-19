@@ -26,6 +26,26 @@ export class WorkoutService {
     this.sessionsSignal.set([]);
   }
 
+  getStatsForExercise(exerciseId: number): Array<{ date: Date; sets: number; reps: number; weightKg: number }> {
+    if (!exerciseId) {
+      return [];
+    }
+
+    const stats: Array<{ date: Date; sets: number; reps: number; weightKg: number }> = [];
+    for (const session of this.sessionsSignal()) {
+      const found = session.exercises.find(entry => entry.exerciseId === exerciseId);
+      if (found) {
+        stats.push({
+          date: session.date,
+          sets: found.sets,
+          reps: found.reps,
+          weightKg: found.weightKg
+        });
+      }
+    }
+    return stats;
+  }
+
   private persist(sessions: WorkoutSession[]): void {
     if (typeof window === 'undefined') {
       return;

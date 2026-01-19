@@ -1,0 +1,46 @@
+.stats-container {
+  padding: 10px;
+}
+
+.filter-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.filter-box select {
+  width: 100%;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.stats-table th,
+.stats-table td {
+  border: 1px solid #e5e7eb;
+  padding: 10px;
+  text-align: center;
+}
+
+.stats-table th {
+  background-color: #f4f4f5;
+  font-weight: 600;
+}
+
+.stats-table tr:nth-child(even) {
+  background-color: #f9fafb;
+}
+
+.no-data-msg {
+  color: #6b7280;
+  font-style: italic;
+  margin-top: 20px;
+  text-align: center;
+}

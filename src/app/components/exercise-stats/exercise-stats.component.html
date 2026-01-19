@@ -1,0 +1,40 @@
+<div class="stats-container">
+  <h2>📈 Progressi Esercizi</h2>
+
+  <div class="filter-box">
+    <label>Vedi progressi per:</label>
+    <select [(ngModel)]="selectedExerciseId" (ngModelChange)="onExerciseChange()">
+      <option [ngValue]="null">-- Seleziona un esercizio --</option>
+      @for (exercise of exercises; track exercise.id) {
+        <option [ngValue]="exercise.id">{{ exercise.name }}</option>
+      }
+    </select>
+  </div>
+
+  <hr />
+
+  @if (selectedExerciseId && stats.length > 0) {
+    <table class="stats-table">
+      <thead>
+        <tr>
+          <th>Data</th>
+          <th>Serie</th>
+          <th>Reps</th>
+          <th>Peso (Kg)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (row of stats; track row.date) {
+          <tr>
+            <td>{{ row.date | date: 'dd/MM/yyyy' }}</td>
+            <td>{{ row.sets }}</td>
+            <td>{{ row.reps }}</td>
+            <td><strong>{{ row.weightKg }}</strong></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  } @else if (selectedExerciseId) {
+    <p class="no-data-msg">Nessun dato trovato per questo esercizio. Inizia ad allenarti!</p>
+  }
+</div>
