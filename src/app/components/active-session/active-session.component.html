@@ -1,0 +1,48 @@
+<div class="session-container">
+  <h2>🏋️‍♂️ Allenamento in corso</h2>
+
+  <div class="add-box">
+    <label>Scegli esercizio:</label>
+    <select [(ngModel)]="selectedExerciseId">
+      <option [ngValue]="null">-- Seleziona --</option>
+      @for (exercise of availableExercises; track exercise.id) {
+        <option [ngValue]="exercise.id">{{ exercise.name }}</option>
+      }
+    </select>
+    <button type="button" (click)="addExercise()">+ Aggiungi</button>
+  </div>
+
+  <hr />
+
+  @if (currentSessionExercises.length === 0) {
+    <p>Nessun esercizio aggiunto. Seleziona sopra per iniziare.</p>
+  } @else {
+    @for (item of currentSessionExercises; let i = $index; track i) {
+      <div class="exercise-card">
+        <div class="card-header">
+          <strong>{{ item.name }}</strong>
+          <button type="button" class="btn-delete" (click)="removeExercise(i)">X</button>
+        </div>
+
+        <div class="inputs-row">
+          <label>
+            Serie:
+            <input type="number" [(ngModel)]="item.sets" min="0" />
+          </label>
+          <label>
+            Reps:
+            <input type="number" [(ngModel)]="item.reps" min="0" />
+          </label>
+          <label>
+            Kg:
+            <input type="number" [(ngModel)]="item.weightKg" min="0" />
+          </label>
+        </div>
+      </div>
+    }
+  }
+
+  @if (currentSessionExercises.length > 0) {
+    <button type="button" class="btn-save" (click)="saveWorkout()">✅ Termina Sessione</button>
+  }
+</div>

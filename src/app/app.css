@@ -32,7 +32,8 @@ h1 {
 }
 
 .section-form,
-.section-list {
+.section-list,
+.section-session {
   backdrop-filter: blur(6px);
   background: rgba(255, 255, 255, 0.7);
   border-radius: 16px;
@@ -46,7 +47,8 @@ h1 {
   justify-content: center;
 }
 
-.section-list {
+.section-list,
+.section-session {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;

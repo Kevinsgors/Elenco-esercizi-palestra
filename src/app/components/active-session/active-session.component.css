@@ -1,0 +1,110 @@
+.session-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background-color: #ffffff;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12);
+}
+
+.session-container h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #0f172a;
+}
+
+.add-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.add-box label {
+  font-weight: 600;
+  color: #1e293b;
+}
+
+select,
+input[type='number'] {
+  padding: 0.45rem 0.6rem;
+  border-radius: 8px;
+  border: 1px solid #cbd5f5;
+  font-size: 1rem;
+  color: #0f172a;
+}
+
+button {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.add-box button {
+  padding: 0.5rem 0.9rem;
+  background-color: #2563eb;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.add-box button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.25);
+}
+
+.exercise-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding: 1rem;
+  border-radius: 12px;
+  border: 1px solid #dbeafe;
+  background: #f8fafc;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.inputs-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.inputs-row label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: #ffffff;
+  padding: 0.3rem 0.6rem;
+  font-weight: 600;
+}
+
+.btn-delete:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+}
+
+.btn-save {
+  align-self: flex-end;
+  padding: 0.65rem 1.3rem;
+  background-color: #16a34a;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.btn-save:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(22, 163, 74, 0.25);
+}
