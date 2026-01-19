@@ -1,44 +1,47 @@
-<div class="form-container">
-  <h3>Aggiungi Esercizio</h3>
+<form class="form" (ngSubmit)="saveExercise()">
+  <div class="field">
+    <label>Nome esercizio*</label>
+    <input type="text" [(ngModel)]="newExercise.name" name="name" placeholder="Es. Panca Piana" required />
+  </div>
 
-  <form (ngSubmit)="saveExercise()">
-    <div class="form-group">
-      <label>Nome Esercizio*</label>
-      <input type="text" [(ngModel)]="newExercise.name" name="name" required placeholder="Es. Panca Piana" />
+  <div class="field">
+    <label>Gruppo muscolare*</label>
+    <app-fancy-select
+      name="muscleGroup"
+      placeholder="Seleziona..."
+      [options]="muscleGroupOptions"
+      [emptyValue]="''"
+      [allowReset]="false"
+      [(ngModel)]="newExercise.muscleGroup"
+      aria-label="Gruppo muscolare"
+    ></app-fancy-select>
+  </div>
+
+  <div class="grid">
+    <div class="field">
+      <label>Serie*</label>
+      <input type="number" [(ngModel)]="newExercise.sets" name="sets" min="1" required />
     </div>
-
-    <div class="form-group">
-      <label>Gruppo Muscolare*</label>
-      <select [(ngModel)]="newExercise.muscleGroup" name="muscleGroup" required>
-        <option value="" disabled>Seleziona...</option>
-        @for (group of muscleGroups; track group) {
-          <option [value]="group">{{ group }}</option>
-        }
-      </select>
+    <div class="field">
+      <label>Reps*</label>
+      <input type="number" [(ngModel)]="newExercise.reps" name="reps" min="1" required />
     </div>
-
-    <div class="row">
-      <div class="form-group">
-        <label>Serie*</label>
-        <input type="number" [(ngModel)]="newExercise.sets" name="sets" required min="1" />
-      </div>
-
-      <div class="form-group">
-        <label>Reps*</label>
-        <input type="number" [(ngModel)]="newExercise.reps" name="reps" required min="1" />
-      </div>
-
-      <div class="form-group">
-        <label>Peso (Kg)</label>
-        <input type="number" [(ngModel)]="newExercise.weightKg" name="weightKg" />
-      </div>
+    <div class="field">
+      <label>Peso (Kg)</label>
+      <input type="number" [(ngModel)]="newExercise.weightKg" name="weightKg" min="0" />
     </div>
+  </div>
 
-    <div class="form-group">
-      <label>Note</label>
-      <input type="text" [(ngModel)]="newExercise.notes" name="notes" />
-    </div>
+  <div class="field">
+    <label>Note</label>
+    <textarea [(ngModel)]="newExercise.notes" name="notes" rows="2" placeholder="Eventuali indicazioni"></textarea>
+  </div>
 
-    <button type="submit" [disabled]="!isValid()">Salva Esercizio</button>
-  </form>
-</div>
+  @if (validationError) {
+    <p class="error-msg">{{ validationError }}</p>
+  }
+
+  <div class="actions">
+    <button type="submit" [disabled]="!isValid()">Salva esercizio</button>
+  </div>
+</form>

@@ -1,32 +1,65 @@
-<div class="list-container">
-  <h3>Il tuo elenco esercizi</h3>
-
+<div class="exercise-wrapper">
   @if (exercises.length === 0) {
-    <p class="empty">Nessun esercizio inserito.</p>
+    <div class="empty-state">
+      <h3>Nessun esercizio salvato</h3>
+      <p>Usa “Crea nuovo esercizio” per iniziare a costruire la tua libreria.</p>
+    </div>
   } @else {
-    @for (exercise of exercises; track exercise.id) {
-      <article class="exercise-card">
-        <div class="card-header">
-          <span class="badge">{{ exercise.muscleGroup }}</span>
-          <h4>{{ exercise.name }}</h4>
-        </div>
+    <div class="exercise-grid">
+      @for (exercise of exercises; track exercise.id) {
+        <article class="exercise-card">
+          <div class="card-top">
+            <div class="title-block">
+              <span class="badge">{{ exercise.muscleGroup }}</span>
+              <h4>{{ exercise.name }}</h4>
+            </div>
+            <button type="button" class="icon-button" (click)="requestDelete(exercise)" aria-label="Elimina esercizio">
+              Elimina
+            </button>
+          </div>
 
-        <div class="card-body">
-          <p>
-            <strong>{{ exercise.sets }}</strong> x <strong>{{ exercise.reps }}</strong>
-            @if (exercise.weightKg) {
-              <span> @ {{ exercise.weightKg }}kg</span>
-            }
-          </p>
+          <div class="metrics">
+            <div class="metric">
+              <span>Serie</span>
+              <strong>{{ exercise.sets }}</strong>
+            </div>
+            <div class="metric">
+              <span>Reps</span>
+              <strong>{{ exercise.reps }}</strong>
+            </div>
+            <div class="metric">
+              <span>Peso</span>
+              <strong>
+                @if (exercise.weightKg) {
+                  {{ exercise.weightKg }} kg
+                } @else {
+                  -
+                }
+              </strong>
+            </div>
+          </div>
+
           @if (exercise.notes) {
-            <p class="notes">Note: {{ exercise.notes }}</p>
+            <p class="notes">{{ exercise.notes }}</p>
           }
-        </div>
-
-        <div class="card-actions">
-          <button class="btn-delete" type="button" (click)="delete(exercise.id)">Elimina</button>
-        </div>
-      </article>
-    }
+        </article>
+      }
+    </div>
   }
 </div>
+
+@if (showDeleteModal) {
+  <div class="exercise-modal-backdrop" (click)="closeDeleteModal()">
+    <div class="exercise-modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true" aria-label="Conferma eliminazione">
+      <div class="exercise-modal-header">
+        <h3>Elimina esercizio</h3>
+        <button type="button" class="exercise-modal-close" (click)="closeDeleteModal()">Chiudi</button>
+      </div>
+      <p>Sei sicuro di voler eliminare {{ pendingDeleteName || 'questo esercizio' }}?</p>
+      <div class="exercise-modal-actions">
+        <button type="button" class="exercise-modal-secondary" (click)="closeDeleteModal()">Annulla</button>
+        <button type="button" class="exercise-modal-primary" (click)="confirmDelete()">Elimina</button>
+      </div>
+    </div>
+  </div>
+}

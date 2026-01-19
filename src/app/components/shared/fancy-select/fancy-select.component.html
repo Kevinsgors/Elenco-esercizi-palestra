@@ -1,0 +1,35 @@
+<div class="fancy-select" [class.open]="open" [class.disabled]="disabled">
+  <button
+    type="button"
+    class="fancy-select-trigger"
+    role="combobox"
+    [attr.aria-expanded]="open"
+    aria-haspopup="listbox"
+    [attr.aria-disabled]="disabled"
+    [attr.aria-label]="triggerAriaLabel"
+    [attr.aria-controls]="listboxId"
+    [disabled]="disabled"
+    (click)="togglePanel($event)"
+    (blur)="onTriggerBlur()"
+    (keydown)="handleKeydown($event)"
+  >
+    <span class="fancy-select-label">{{ currentLabel }}</span>
+    <span class="fancy-select-chevron" aria-hidden="true"></span>
+  </button>
+
+  <div class="fancy-select-panel" *ngIf="open" [attr.id]="panelId">
+    <ul class="fancy-select-list" role="listbox" [attr.id]="listboxId">
+      <li
+        *ngFor="let item of viewItems; let i = index; trackBy: trackItem"
+        class="fancy-select-option"
+        [class.placeholder]="item.isPlaceholder"
+        [class.disabled]="item.disabled"
+        [class.active]="isActive(i)"
+        (click)="selectIndex(i, $event)"
+        (mouseenter)="onItemHover(i)"
+      >
+        {{ item.label }}
+      </li>
+    </ul>
+  </div>
+</div>

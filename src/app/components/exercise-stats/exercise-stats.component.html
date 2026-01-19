@@ -1,40 +1,143 @@
-<div class="stats-container">
-  <h2>📈 Progressi Esercizi</h2>
+<div class="stats-shell">
+  <section class="stats-hero">
+    <div class="hero-text">
+      <span class="hero-kicker">Analisi gruppi muscolari</span>
+      <h2>Progressi esercizi</h2>
+      <p>Monitora volume, carico e costanza per ogni movimento registrato nelle sessioni.</p>
+    </div>
 
-  <div class="filter-box">
-    <label>Vedi progressi per:</label>
-    <select [(ngModel)]="selectedExerciseId" (ngModelChange)="onExerciseChange()">
-      <option [ngValue]="null">-- Seleziona un esercizio --</option>
-      @for (exercise of exercises; track exercise.id) {
-        <option [ngValue]="exercise.id">{{ exercise.name }}</option>
-      }
-    </select>
-  </div>
+    <div class="hero-filter">
+      <label>Analizza esercizio</label>
+      <app-fancy-select
+        placeholder="-- Seleziona un esercizio --"
+        [options]="exerciseOptions"
+        [(ngModel)]="selectedExerciseId"
+        (ngModelChange)="onExerciseChange()"
+        aria-label="Filtro esercizi"
+      ></app-fancy-select>
+    </div>
+  </section>
 
-  <hr />
-
-  @if (selectedExerciseId && stats.length > 0) {
-    <table class="stats-table">
-      <thead>
-        <tr>
-          <th>Data</th>
-          <th>Serie</th>
-          <th>Reps</th>
-          <th>Peso (Kg)</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (row of stats; track row.date) {
-          <tr>
-            <td>{{ row.date | date: 'dd/MM/yyyy' }}</td>
-            <td>{{ row.sets }}</td>
-            <td>{{ row.reps }}</td>
-            <td><strong>{{ row.weightKg }}</strong></td>
-          </tr>
+  @if (!hasSelection) {
+    <section class="stats-placeholder">
+      <div class="placeholder-inner">
+        <h3>Seleziona un esercizio</h3>
+        <p>Scegli un movimento dalla tua libreria per vedere andamento, volume e carico registrato nel tempo.</p>
+      </div>
+    </section>
+  } @else if (!hasStats) {
+    <section class="stats-empty">
+      <div class="empty-inner">
+        <h3>Nessun dato disponibile</h3>
+        <p>
+          Appena registrerai questo esercizio in una sessione, troverai qui andamento del carico e il riepilogo completo.
+        </p>
+        <span class="empty-tip">Completa una sessione dalla sezione Allenamento per iniziare.</span>
+      </div>
+    </section>
+  } @else {
+    <section class="stats-metrics">
+      <div class="metric-card">
+        <span class="metric-label">Sessioni loggate</span>
+        <strong class="metric-value">{{ summary.sessions }}</strong>
+        @if (summary.firstDate && summary.lastDate) {
+          <span class="metric-hint">{{ summary.firstDate | date: 'd MMM y' }} → {{ summary.lastDate | date: 'd MMM y' }}</span>
         }
-      </tbody>
-    </table>
-  } @else if (selectedExerciseId) {
-    <p class="no-data-msg">Nessun dato trovato per questo esercizio. Inizia ad allenarti!</p>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Volume totale</span>
+        <strong class="metric-value">{{ summary.totalVolume | number: '1.0-0' }} kg</strong>
+        <span class="metric-hint">{{ averageVolume | number: '1.0-0' }} kg · media sessione</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Carico massimo</span>
+        <strong class="metric-value">{{ summary.bestWeight | number: '1.0-0' }} kg</strong>
+        <span class="metric-hint">Picco registrato</span>
+      </div>
+      <div class="metric-card">
+        <span class="metric-label">Reps complessive</span>
+        <strong class="metric-value">{{ summary.totalReps }}</strong>
+        <span class="metric-hint">{{ summary.totalSets }} serie totali</span>
+      </div>
+    </section>
+
+    <section class="stats-trend">
+      <article class="trend-card" [class.positive]="summary.progressDelta > 0" [class.negative]="summary.progressDelta < 0">
+        <header class="trend-header">
+          <span class="trend-label">Trend carico</span>
+          <span class="trend-value">{{ summary.progressDelta | number: '1.0-0' }} kg</span>
+        </header>
+        @if (summary.progressPercent !== null) {
+          <p class="trend-copy">
+            Variazione del {{ summary.progressPercent | number: '1.0-1' }}% rispetto alla prima registrazione di
+            {{ selectedExerciseName }}.
+          </p>
+        } @else {
+          <p class="trend-copy">Non hai ancora variazioni di carico su questo esercizio. Continua a registrare i dati!</p>
+        }
+        <div class="trend-grid">
+          <div class="trend-item">
+            <span>Carico iniziale</span>
+            <strong>{{ summary.firstWeight | number: '1.0-0' }} kg</strong>
+            @if (summary.firstDate) {
+              <small>{{ summary.firstDate | date: 'd MMM y' }}</small>
+            }
+          </div>
+          <div class="trend-item">
+            <span>Carico attuale</span>
+            <strong>{{ summary.lastWeight | number: '1.0-0' }} kg</strong>
+            @if (summary.lastDate) {
+              <small>{{ summary.lastDate | date: 'd MMM y' }}</small>
+            }
+          </div>
+          <div class="trend-item">
+            <span>Picco volume</span>
+            <strong>{{ summary.peakVolume | number: '1.0-0' }} kg</strong>
+            @if (summary.peakVolumeDate) {
+              <small>{{ summary.peakVolumeDate | date: 'd MMM y' }}</small>
+            }
+          </div>
+        </div>
+      </article>
+
+      <div class="entry-grid">
+        @for (entry of viewStats; let i = $index; track trackStatEntry($index, entry)) {
+          <article class="entry-card" [class.entry-latest]="i === 0" [class.entry-peak]="peakEntry === entry">
+            <header class="entry-header">
+              <div>
+                <span class="entry-date">{{ entry.date | date: 'EEE d MMM' }}</span>
+                <span class="entry-time">{{ entry.date | date: 'HH:mm' }}</span>
+              </div>
+              <div class="entry-tags">
+                @if (i === 0) {
+                  <span class="entry-tag latest">Ultima</span>
+                }
+                @if (peakEntry === entry) {
+                  <span class="entry-tag peak">Picco</span>
+                }
+              </div>
+            </header>
+            <div class="entry-body">
+              <div class="entry-metric">
+                <span>Serie</span>
+                <strong>{{ entry.sets }}</strong>
+              </div>
+              <div class="entry-metric">
+                <span>Reps totali</span>
+                <strong>{{ entry.totalReps }}</strong>
+              </div>
+              <div class="entry-metric">
+                <span>Carico</span>
+                <strong>{{ entry.weightKg | number: '1.0-0' }} kg</strong>
+              </div>
+              <div class="entry-metric">
+                <span>Volume</span>
+                <strong>{{ entry.volume | number: '1.0-0' }} kg</strong>
+              </div>
+            </div>
+          </article>
+        }
+      </div>
+    </section>
   }
 </div>

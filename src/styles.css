@@ -1,9 +1,10 @@
 /* You can add global styles to this file, and also import other style files */
 
 body {
-  background: linear-gradient(135deg, #ffffcc 0%, #ccffff 50%, #ffccff 100%);
+  background: radial-gradient(circle at top left, #1c184d 0%, #0d1124 60%, #04060d 100%);
   background-attachment: fixed;
-  font-family: 'Comic Sans MS', 'Arial', cursive;
+  font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #f8fafc;
   margin: 0;
   padding: 0;
 }

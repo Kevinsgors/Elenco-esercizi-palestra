@@ -1,0 +1,298 @@
+@let plan = draft();
+@let mode = viewMode();
+@let savedPlans = plans();
+@let expanded = expandedPlanId();
+
+<div class="plans-shell">
+  <header class="plans-hero">
+    <div class="plans-hero-text">
+      <h2>Le tue schede di allenamento</h2>
+      <p>Pianifica la routine settimanale, consulta le schede salvate e apri i dettagli quando ti servono.</p>
+    </div>
+    <div class="plans-hero-actions">
+      @if (mode === 'library') {
+        <button type="button" class="hero-button" (click)="showCreateView()">
+          Crea scheda
+        </button>
+      } @else {
+        <button type="button" class="hero-button secondary" (click)="showLibraryView()">
+          Torna alle schede
+        </button>
+      }
+    </div>
+  </header>
+
+  @if (mode === 'library') {
+    <section class="plans-library">
+      @if (savedPlans.length === 0) {
+        <div class="plans-empty">
+          <h3>Nessuna scheda salvata</h3>
+          <p>Genera una scheda per organizzarla qui e tenerla sempre a portata di mano.</p>
+        </div>
+      } @else {
+        <div class="plan-collection">
+          @for (planItem of savedPlans; track trackByPlan($index, planItem)) {
+            <article class="plan-card" [class.expanded]="expanded === planItem.id">
+              <button
+                type="button"
+                class="plan-card-header"
+                (click)="togglePlan(planItem.id)"
+                [attr.aria-expanded]="expanded === planItem.id"
+              >
+                <div class="plan-card-title">
+                  <h3>{{ planItem.name }}</h3>
+                  <span>{{ planItem.focus }}</span>
+                </div>
+                <div class="plan-card-pills">
+                  <span class="plan-chip">{{ planItem.frequencyPerWeek }}x settimana</span>
+                  <span class="plan-chip">{{ planItem.days.length }} giornate</span>
+                </div>
+              </button>
+
+              @if (expanded === planItem.id) {
+                <div class="plan-card-body">
+                  <div class="plan-card-toolbar">
+                    <span class="plan-card-date">Creata il {{ planItem.createdAt | date: 'd MMMM y' }}</span>
+                    <button type="button" class="plan-delete" (click)="$event.stopPropagation(); deletePlan(planItem.id)">
+                      Elimina scheda
+                    </button>
+                  </div>
+
+                  @if (planItem.notes) {
+                    <p class="plan-card-notes">{{ planItem.notes }}</p>
+                  }
+
+                  <div class="plan-days">
+                    @for (day of planItem.days; track day.id) {
+                      <section class="plan-day">
+                        <header class="plan-day-header">
+                          <div>
+                            <h4>{{ day.title }}</h4>
+                            <span>{{ day.emphasis }}</span>
+                          </div>
+                          <span class="plan-day-count">{{ day.exercises.length }} esercizi</span>
+                        </header>
+                        <ul class="plan-day-exercises">
+                          @for (exercise of day.exercises; track exercise.exerciseId) {
+                            <li>
+                              <div class="exercise-meta">
+                                <strong>{{ exercise.name }}</strong>
+                                <span>{{ exercise.sets }} × {{ exercise.reps }}</span>
+                              </div>
+                              @if (exercise.notes) {
+                                <p>{{ exercise.notes }}</p>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      </section>
+                    }
+                  </div>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      }
+    </section>
+  } @else {
+    <section class="builder-surface">
+      <header class="builder-head">
+        <div>
+          <h3>Crea scheda</h3>
+          <p>Definisci focus, frequenza e giornate con gli esercizi dedicati.</p>
+        </div>
+      </header>
+
+      @if (feedback(); as info) {
+        <p class="builder-feedback" [class.feedback-error]="info.tone === 'error'" [class.feedback-success]="info.tone === 'success'">
+          {{ info.message }}
+        </p>
+      }
+
+      <div class="builder-grid">
+        <div class="field">
+          <label for="plan-name">Nome scheda</label>
+          <input
+            id="plan-name"
+            type="text"
+            placeholder="Es. Spinta/Trazione + Gambe"
+            [ngModel]="plan.name"
+            (ngModelChange)="updateRoot('name', $event)"
+          />
+        </div>
+
+        <div class="field">
+          <label>Focus principale</label>
+          <app-fancy-select
+            placeholder="Seleziona focus"
+            [emptyValue]="''"
+            [allowReset]="false"
+            [options]="focusSelectOptions"
+            [ngModel]="plan.focus"
+            (ngModelChange)="updateRoot('focus', $event)"
+            aria-label="Focus principale"
+          ></app-fancy-select>
+        </div>
+
+        <div class="field">
+          <label for="plan-frequency">Frequenza settimanale</label>
+          <input
+            id="plan-frequency"
+            type="number"
+            min="1"
+            max="7"
+            placeholder="Es. 4"
+            [ngModel]="plan.frequencyPerWeek"
+            (ngModelChange)="updateRoot('frequencyPerWeek', parseFrequency($event))"
+          />
+        </div>
+
+        <div class="field field-notes">
+          <label for="plan-notes">Indicazioni generali</label>
+          <textarea
+            id="plan-notes"
+            rows="3"
+            placeholder="Linee guida, consigli tecnici o progressioni da seguire"
+            [ngModel]="plan.notes"
+            (ngModelChange)="updateRoot('notes', $event)"
+          ></textarea>
+        </div>
+      </div>
+
+      <section class="builder-sessions">
+        <div class="builder-sessions-head">
+          <div>
+            <h4>Sessioni della settimana</h4>
+            <p>Organizza le giornate con enfasi, esercizi e note tecniche.</p>
+          </div>
+        </div>
+
+        @if (plan.days.length === 0) {
+          <div class="builder-empty">
+            <h4>Nessuna giornata impostata</h4>
+            <p>Aggiungi la prima giornata per iniziare a costruire la scheda.</p>
+          </div>
+        } @else {
+          <div class="day-stack">
+            @for (day of plan.days; track trackByDay($index, day); let dayIndex = $index) {
+              <article class="day-card">
+                <header class="day-card-header">
+                  <div class="day-fields">
+                    <label>
+                      Nome giornata
+                      <input
+                        type="text"
+                        placeholder="Es. Spinta"
+                        [ngModel]="day.title"
+                        (ngModelChange)="updateDay(dayIndex, 'title', $event)"
+                      />
+                    </label>
+                    <label>
+                      Enfasi muscolare
+                      <input
+                        type="text"
+                        placeholder="Es. Pettorali, spalle"
+                        [ngModel]="day.emphasis"
+                        (ngModelChange)="updateDay(dayIndex, 'emphasis', $event)"
+                      />
+                    </label>
+                  </div>
+                  <button type="button" class="remove-day" (click)="removeDay(dayIndex)">Rimuovi giornata</button>
+                </header>
+
+                @if (day.exercises.length === 0) {
+                  <div class="exercise-empty">
+                    <p>Nessun esercizio assegnato.</p>
+                    <button type="button" class="ghost-button" (click)="addExercise(dayIndex)">Aggiungi esercizio</button>
+                  </div>
+                } @else {
+                  <div class="exercise-stack">
+                    @for (exercise of day.exercises; track trackByExercise($index); let exerciseIndex = $index) {
+                      <div class="exercise-line">
+                        <div class="exercise-core">
+                          <label>
+                            Esercizio
+                            <app-fancy-select
+                              placeholder="Seleziona dalla libreria"
+                              [options]="exerciseSelectOptions"
+                              [ngModel]="exercise.exerciseId"
+                              (ngModelChange)="updateExercise(dayIndex, exerciseIndex, { exerciseId: $event ?? null })"
+                              aria-label="Esercizio dalla libreria"
+                            ></app-fancy-select>
+                          </label>
+                          <label>
+                            Nome personalizzato
+                            <input
+                              type="text"
+                              placeholder="Opzionale"
+                              [ngModel]="exercise.customName"
+                              (ngModelChange)="updateExercise(dayIndex, exerciseIndex, { customName: $event })"
+                            />
+                          </label>
+                        </div>
+
+                        <div class="exercise-metrics">
+                          <label>
+                            Serie
+                            <input
+                              type="number"
+                              min="0"
+                              [ngModel]="exercise.sets"
+                              (ngModelChange)="updateExercise(dayIndex, exerciseIndex, { sets: parseCount($event) })"
+                            />
+                          </label>
+                          <label>
+                            Ripetizioni
+                            <input
+                              type="number"
+                              min="0"
+                              [ngModel]="exercise.reps"
+                              (ngModelChange)="updateExercise(dayIndex, exerciseIndex, { reps: parseCount($event) })"
+                            />
+                          </label>
+                        </div>
+
+                        <label class="exercise-notes">
+                          Note tecniche
+                          <textarea
+                            rows="2"
+                            placeholder="Cue, tempi, varianti..."
+                            [ngModel]="exercise.notes"
+                            (ngModelChange)="updateExercise(dayIndex, exerciseIndex, { notes: $event || '' })"
+                          ></textarea>
+                        </label>
+
+                        <button
+                          type="button"
+                          class="remove-exercise"
+                          (click)="removeExercise(dayIndex, exerciseIndex)"
+                        >
+                          Rimuovi esercizio
+                        </button>
+                      </div>
+                    }
+
+                    <button type="button" class="ghost-button" (click)="addExercise(dayIndex)">
+                      Aggiungi un altro esercizio
+                    </button>
+                  </div>
+                }
+              </article>
+            }
+          </div>
+        }
+      </section>
+
+      <footer class="builder-footer">
+        <button type="button" class="ghost-button" (click)="addDay()">Aggiungi giornata</button>
+        <div class="builder-footer-actions">
+          <button type="button" class="ghost-button" (click)="showLibraryView()">Annulla</button>
+          <button type="button" class="builder-save" [disabled]="isSaveDisabled()" (click)="savePlan()">
+            Salva scheda
+          </button>
+        </div>
+      </footer>
+    </section>
+  }
+</div>

@@ -1,48 +1,106 @@
-<div class="session-container">
-  <h2>🏋️‍♂️ Allenamento in corso</h2>
+<div class="session-shell">
+  <header class="session-hero">
+    <div class="session-hero-text">
+      <span class="session-tag">Sessione attiva</span>
+      <h2>Allenamento in corso</h2>
+      <p>Registra rapidamente serie, ripetizioni e carichi per ogni esercizio della giornata.</p>
+    </div>
+    <div class="session-hero-meta">
+      <div>
+        <span class="meta-label">Esercizi</span>
+        <span class="meta-value">{{ currentSessionExercises.length }}</span>
+      </div>
+      <div>
+        <span class="meta-label">Tempo stimato</span>
+        <span class="meta-value">~ {{ currentSessionExercises.length * 8 }} min</span>
+      </div>
+    </div>
+  </header>
 
-  <div class="add-box">
-    <label>Scegli esercizio:</label>
-    <select [(ngModel)]="selectedExerciseId">
-      <option [ngValue]="null">-- Seleziona --</option>
-      @for (exercise of availableExercises; track exercise.id) {
-        <option [ngValue]="exercise.id">{{ exercise.name }}</option>
-      }
-    </select>
-    <button type="button" (click)="addExercise()">+ Aggiungi</button>
-  </div>
+  <section class="session-add">
+    <div class="session-add-inputs">
+      <label>Aggiungi esercizio dalla libreria</label>
+      <div class="session-add-controls">
+        <app-fancy-select
+          id="session-exercise"
+          placeholder="Seleziona un esercizio"
+          [options]="exerciseOptions"
+          [(ngModel)]="selectedExerciseId"
+          aria-label="Seleziona un esercizio"
+        ></app-fancy-select>
+        <button type="button" class="add-button" (click)="addExercise()">Aggiungi</button>
+      </div>
+    </div>
+    <p class="session-tip">Suggerimento: aggiungi solo gli esercizi che esegui oggi, potrai modificarli in qualsiasi momento.</p>
+  </section>
 
-  <hr />
+  <section class="session-body">
+    @if (currentSessionExercises.length === 0) {
+      <div class="session-empty">
+        <h3>Nessun esercizio selezionato</h3>
+        <p>Utilizza il selettore qui sopra per costruire la sessione in tempo reale.</p>
+      </div>
+    } @else {
+      <div class="session-grid">
+        @for (item of currentSessionExercises; let i = $index; track i) {
+          <article class="exercise-card">
+            <header class="exercise-card-header">
+              <div>
+                <h4>{{ item.name }}</h4>
+                <span class="exercise-tag">Serie × Reps × Kg</span>
+              </div>
+              <button type="button" class="remove-button" (click)="removeExercise(i)">
+                Rimuovi
+              </button>
+            </header>
 
-  @if (currentSessionExercises.length === 0) {
-    <p>Nessun esercizio aggiunto. Seleziona sopra per iniziare.</p>
-  } @else {
-    @for (item of currentSessionExercises; let i = $index; track i) {
-      <div class="exercise-card">
-        <div class="card-header">
-          <strong>{{ item.name }}</strong>
-          <button type="button" class="btn-delete" (click)="removeExercise(i)">X</button>
-        </div>
-
-        <div class="inputs-row">
-          <label>
-            Serie:
-            <input type="number" [(ngModel)]="item.sets" min="0" />
-          </label>
-          <label>
-            Reps:
-            <input type="number" [(ngModel)]="item.reps" min="0" />
-          </label>
-          <label>
-            Kg:
-            <input type="number" [(ngModel)]="item.weightKg" min="0" />
-          </label>
-        </div>
+            <div class="exercise-inputs">
+              <label>
+                Serie
+                <input type="number" [(ngModel)]="item.sets" min="0" />
+              </label>
+              <label>
+                Ripetizioni
+                <input type="number" [(ngModel)]="item.reps" min="0" />
+              </label>
+              <label>
+                Peso (kg)
+                <input type="number" [(ngModel)]="item.weightKg" min="0" />
+              </label>
+            </div>
+          </article>
+        }
       </div>
     }
-  }
+  </section>
 
   @if (currentSessionExercises.length > 0) {
-    <button type="button" class="btn-save" (click)="saveWorkout()">✅ Termina Sessione</button>
+    <footer class="session-footer">
+      <button type="button" class="ghost-button" (click)="resetSession()">
+        Svuota sessione
+      </button>
+      <button type="button" class="primary-button" (click)="saveWorkout()">Termina sessione</button>
+    </footer>
   }
 </div>
+
+@if (showModal) {
+  <div class="session-modal-backdrop" (click)="closeModal()">
+    <div
+      class="session-modal"
+      [class.session-modal-error]="modalTone === 'error'"
+      [class.session-modal-success]="modalTone === 'success'"
+      (click)="$event.stopPropagation()"
+      role="dialog"
+      aria-modal="true"
+      [attr.aria-label]="modalTitle"
+    >
+      <div class="session-modal-header">
+        <h3>{{ modalTitle }}</h3>
+        <button type="button" class="session-modal-close" (click)="closeModal()">Chiudi</button>
+      </div>
+      <p>{{ modalMessage }}</p>
+      <button type="button" class="session-modal-action" (click)="closeModal()">Ok</button>
+    </div>
+  </div>
+}

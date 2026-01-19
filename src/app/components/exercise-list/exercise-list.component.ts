@@ -11,6 +11,9 @@ import { Exercise } from '../../models/exercise';
 })
 export class ExerciseListComponent implements OnInit {
   exercises: Exercise[] = [];
+  showDeleteModal = false;
+  pendingDeleteId: number | null = null;
+  pendingDeleteName = '';
 
   constructor(
     private readonly exerciseService: ExerciseService,
@@ -25,9 +28,22 @@ export class ExerciseListComponent implements OnInit {
       });
   }
 
-  delete(id: number): void {
-    if (confirm('Sei sicuro di voler eliminare questo esercizio?')) {
-      this.exerciseService.deleteExercise(id);
+  requestDelete(exercise: Exercise): void {
+    this.pendingDeleteId = exercise.id;
+    this.pendingDeleteName = exercise.name;
+    this.showDeleteModal = true;
+  }
+
+  confirmDelete(): void {
+    if (this.pendingDeleteId != null) {
+      this.exerciseService.deleteExercise(this.pendingDeleteId);
     }
+    this.closeDeleteModal();
+  }
+
+  closeDeleteModal(): void {
+    this.showDeleteModal = false;
+    this.pendingDeleteId = null;
+    this.pendingDeleteName = '';
   }
 }

@@ -1,25 +1,74 @@
-<div class="main-container">
-  <h1>Gym Tracker</h1>
-
-  <div class="content-wrapper">
-    <section class="section-form">
-      <app-exercise-form></app-exercise-form>
-    </section>
-
-    <section class="section-list">
-      <app-exercise-list></app-exercise-list>
-    </section>
-
-    <section class="section-session">
-      <app-active-session></app-active-session>
-    </section>
-
-    <section class="section-history">
-      <app-history></app-history>
-    </section>
-
-    <section class="section-stats">
-      <app-exercise-stats></app-exercise-stats>
-    </section>
+<nav class="navbar">
+  <div class="navbar-inner">
+    <div class="brand">Gym Tracker</div>
+    <ul class="nav-list">
+      @for (section of sections; track section.key) {
+        <li>
+          <button
+            type="button"
+            class="nav-button"
+            [class.active]="activeSection() === section.key"
+            (click)="selectSection(section.key)">
+            {{ section.label }}
+          </button>
+        </li>
+      }
+    </ul>
   </div>
+</nav>
+
+<div class="shell">
+  <main class="content">
+    @switch (activeSection()) {
+      @case ('esercizi') {
+        <section class="panel panel-esercizi">
+          <header class="panel-header">
+            <div>
+              <h2>Libreria esercizi</h2>
+              <p>Gestisci e aggiorna i movimenti principali del tuo allenamento.</p>
+            </div>
+            <button type="button" class="cta-button" (click)="openExerciseModal()">
+              + Crea nuovo esercizio
+            </button>
+          </header>
+          <app-exercise-list></app-exercise-list>
+        </section>
+
+        @if (showExerciseModal()) {
+          <div class="modal-backdrop" (click)="closeExerciseModal()">
+            <div class="modal-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+              <header class="modal-header">
+                <div>
+                  <h3>Nuovo esercizio</h3>
+                  <p>Compila i dettagli per aggiungere un esercizio alla libreria.</p>
+                </div>
+                <button type="button" class="modal-close" (click)="closeExerciseModal()" aria-label="Chiudi">Chiudi</button>
+              </header>
+              <app-exercise-form (saved)="handleExerciseSaved()"></app-exercise-form>
+            </div>
+          </div>
+        }
+      }
+      @case ('schede') {
+        <section class="panel">
+          <app-history></app-history>
+        </section>
+      }
+      @case ('nuova') {
+        <section class="panel">
+          <app-new-plan></app-new-plan>
+        </section>
+      }
+      @case ('sessione') {
+        <section class="panel">
+          <app-active-session></app-active-session>
+        </section>
+      }
+      @case ('analisi') {
+        <section class="panel">
+          <app-exercise-stats></app-exercise-stats>
+        </section>
+      }
+    }
+  </main>
 </div>

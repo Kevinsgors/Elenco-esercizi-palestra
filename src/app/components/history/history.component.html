@@ -1,27 +1,80 @@
-<div class="history-container">
-  <h2>📅 Storico Allenamenti</h2>
+<div class="history-shell">
+  <section class="history-hero">
+    <div class="hero-text">
+      <span class="hero-kicker">Memorie di allenamento</span>
+      <h2>Storico allenamenti</h2>
+      <p>Rivivi ogni sessione registrata e monitora avanzamento e costanza nel tempo.</p>
+    </div>
 
-  @if (history.length === 0) {
-    <p>Non hai ancora completato nessun allenamento.</p>
-  } @else {
-    @for (session of history; track session.id) {
-      <div class="session-card">
-        <div class="session-header">
-          <h3>{{ session.date | date: 'EEEE d MMMM y, HH:mm' }}</h3>
+    @if (history.length > 0) {
+      <div class="hero-stats">
+        <div class="stat-card">
+          <span class="stat-label">Sessioni totali</span>
+          <strong class="stat-value">{{ totalSessions }}</strong>
         </div>
-
-        <ul class="exercise-list">
-          @for (exercise of session.exercises; track exercise.exerciseId) {
-            <li>
-              <strong>{{ exercise.name }}</strong>:
-              {{ exercise.sets }} serie x {{ exercise.reps }} reps
-              @if (exercise.weightKg > 0) {
-                <span>(@ {{ exercise.weightKg }}kg)</span>
-              }
-            </li>
-          }
-        </ul>
+        <div class="stat-card">
+          <span class="stat-label">Esercizi loggati</span>
+          <strong class="stat-value">{{ totalExercises }}</strong>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Serie totali</span>
+          <strong class="stat-value">{{ totalSets }}</strong>
+        </div>
+        @if (hasVolumeData) {
+          <div class="stat-card">
+            <span class="stat-label">Volume sollevato</span>
+            <strong class="stat-value">{{ totalVolume | number: '1.0-0' }} kg</strong>
+          </div>
+        }
       </div>
     }
+  </section>
+
+  @if (history.length === 0) {
+    <section class="history-empty">
+      <div class="empty-inner">
+        <h3>Nessun allenamento registrato</h3>
+        <p>Completa una sessione dalla sezione Allenamento per popolare questa pagina.</p>
+        <span class="empty-tip">Le sessioni salvate appariranno qui con dettagli e progressi.</span>
+      </div>
+    </section>
+  } @else {
+    <div class="history-grid">
+      @for (session of history; track session.id) {
+        @let sessionSets = getSessionSets(session);
+        @let sessionVolume = getSessionVolume(session);
+
+        <article class="history-card">
+          <header class="card-head">
+            <div class="card-date">
+              <span class="card-day">{{ session.date | date: 'EEEE' }}</span>
+              <h3>{{ session.date | date: 'd MMMM y' }}</h3>
+            </div>
+            <div class="card-meta">
+              <span class="card-chip">{{ session.exercises.length }} esercizi</span>
+              <span class="card-chip">{{ sessionSets }} serie</span>
+              @if (sessionVolume > 0) {
+                <span class="card-chip weight">{{ sessionVolume | number: '1.0-0' }} kg</span>
+              }
+              <span class="card-time">{{ session.date | date: 'HH:mm' }}</span>
+            </div>
+          </header>
+
+          <ul class="exercise-list">
+            @for (exercise of session.exercises; track exercise.exerciseId) {
+              <li class="exercise-item">
+                <div class="exercise-name">{{ exercise.name }}</div>
+                <div class="exercise-badges">
+                  <span class="exercise-chip">{{ exercise.sets }} × {{ exercise.reps }}</span>
+                  @if (exercise.weightKg !== undefined && exercise.weightKg > 0) {
+                    <span class="exercise-chip weight">{{ exercise.weightKg }} kg</span>
+                  }
+                </div>
+              </li>
+            }
+          </ul>
+        </article>
+      }
+    </div>
   }
 </div>

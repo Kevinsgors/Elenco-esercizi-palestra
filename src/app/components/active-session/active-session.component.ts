@@ -5,11 +5,12 @@ import { ExerciseService } from '../../services/exercise.service';
 import { WorkoutService } from '../../services/workout.service';
 import { Exercise } from '../../models/exercise';
 import { SessionExerciseLog, WorkoutSession } from '../../models/session';
+import { FancySelectComponent, FancySelectOption } from '../shared/fancy-select/fancy-select.component';
 
 @Component({
   selector: 'app-active-session',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, FancySelectComponent],
   templateUrl: './active-session.component.html',
   styleUrls: ['./active-session.component.css']
 })
@@ -17,6 +18,11 @@ export class ActiveSessionComponent implements OnInit {
   availableExercises: Exercise[] = [];
   currentSessionExercises: SessionExerciseLog[] = [];
   selectedExerciseId: number | null = null;
+  exerciseOptions: FancySelectOption<number>[] = [];
+  showModal = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalTone: 'error' | 'success' = 'success';
 
   constructor(
     private readonly exerciseService: ExerciseService,
@@ -29,6 +35,10 @@ export class ActiveSessionComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.availableExercises = data;
+        this.exerciseOptions = data.map(item => ({
+          value: item.id,
+          label: item.name
+        }));
       });
   }
 
@@ -55,7 +65,7 @@ export class ActiveSessionComponent implements OnInit {
 
   saveWorkout(): void {
     if (this.currentSessionExercises.length === 0) {
-      alert('Aggiungi almeno un esercizio!');
+      this.openModal('error', 'Aggiungi almeno un esercizio!');
       return;
     }
 
@@ -66,7 +76,23 @@ export class ActiveSessionComponent implements OnInit {
     };
 
     this.workoutService.saveSession(newSession);
-    alert('Allenamento salvato!');
+    this.openModal('success', 'Allenamento salvato!');
+    this.resetSession();
+  }
+
+  closeModal(): void {
+    this.showModal = false;
+  }
+
+  resetSession(): void {
     this.currentSessionExercises = [];
+    this.selectedExerciseId = null;
+  }
+
+  private openModal(tone: 'error' | 'success', message: string): void {
+    this.modalTone = tone;
+    this.modalTitle = tone === 'error' ? 'Attenzione' : 'Fatto';
+    this.modalMessage = message;
+    this.showModal = true;
   }
 }
