@@ -1,0 +1,27 @@
+<div class="history-container">
+  <h2>📅 Storico Allenamenti</h2>
+
+  @if (history.length === 0) {
+    <p>Non hai ancora completato nessun allenamento.</p>
+  } @else {
+    @for (session of history; track session.id) {
+      <div class="session-card">
+        <div class="session-header">
+          <h3>{{ session.date | date: 'EEEE d MMMM y, HH:mm' }}</h3>
+        </div>
+
+        <ul class="exercise-list">
+          @for (exercise of session.exercises; track exercise.exerciseId) {
+            <li>
+              <strong>{{ exercise.name }}</strong>:
+              {{ exercise.sets }} serie x {{ exercise.reps }} reps
+              @if (exercise.weightKg > 0) {
+                <span>(@ {{ exercise.weightKg }}kg)</span>
+              }
+            </li>
+          }
+        </ul>
+      </div>
+    }
+  }
+</div>

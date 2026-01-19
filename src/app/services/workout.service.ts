@@ -9,6 +9,8 @@ export class WorkoutService {
 
   readonly sessions = this.sessionsSignal.asReadonly();
   readonly sessions$ = toObservable(this.sessionsSignal);
+  readonly history = this.sessions;
+  readonly history$ = this.sessions$;
 
   constructor() {
     effect(() => {

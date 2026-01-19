@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ExerciseService } from '../../services/exercise.service';
 import { Exercise } from '../../models/exercise';
@@ -12,11 +12,14 @@ import { Exercise } from '../../models/exercise';
 export class ExerciseListComponent implements OnInit {
   exercises: Exercise[] = [];
 
-  constructor(private readonly exerciseService: ExerciseService) {}
+  constructor(
+    private readonly exerciseService: ExerciseService,
+    private readonly destroyRef: DestroyRef
+  ) {}
 
   ngOnInit(): void {
     this.exerciseService.exercises$
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.exercises = data;
       });

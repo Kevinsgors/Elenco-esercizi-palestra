@@ -1,0 +1,35 @@
+.history-container {
+  padding: 10px;
+}
+
+.session-card {
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 15px;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.08);
+}
+
+.session-header h3 {
+  margin: 0;
+  color: #1f2937;
+  font-size: 1.1rem;
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 10px;
+}
+
+.exercise-list {
+  list-style-type: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.exercise-list li {
+  padding: 5px 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.exercise-list li:last-child {
+  border-bottom: none;
+}

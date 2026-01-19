@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ExerciseService } from '../../services/exercise.service';
@@ -20,12 +20,13 @@ export class ActiveSessionComponent implements OnInit {
 
   constructor(
     private readonly exerciseService: ExerciseService,
-    private readonly workoutService: WorkoutService
+    private readonly workoutService: WorkoutService,
+    private readonly destroyRef: DestroyRef
   ) {}
 
   ngOnInit(): void {
     this.exerciseService.exercises$
-      .pipe(takeUntilDestroyed())
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(data => {
         this.availableExercises = data;
       });
